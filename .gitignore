@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.tanstack/
+.nitro/
+.output/
+.wrangler/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+
+# logs & OS noise
+*.log
+.DS_Store
+
+# editor
+.vscode/
+.idea/
