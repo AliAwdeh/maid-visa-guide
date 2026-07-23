@@ -49,8 +49,8 @@ curl -X POST https://maidscc.app/api/guides \
 Response:
 
 ```json
-{ "ok": true, "token": "VdwOVPlXerWMbWk6GejchQ",
-  "url": "https://maidscc.app/Views/VdwOVPlXerWMbWk6GejchQ" }
+{ "ok": true, "token": "xPEiU5ouKFape7KcpITgMg",
+  "url": "https://maidscc.app/Views/xPEiU5ouKFape7KcpITgMg" }
 ```
 
 ### Fields
@@ -108,23 +108,23 @@ CLIENT_ID = 12345 · salary = AED 1,000 · contract_start_date = 2026-06-01 (Jun
 - **Visa timeline** — `7` → Change of Status ~3d, Medical ~2d, Residency ~2d, Emirates ID ~10d; `14` → CoS ~8d, Medical ~3d, Residency ~3d, Emirates ID ~10d.
 - **Biometric step** — added only for Abu Dhabi + `NEW`.
 
-> **Note on the links:** each API call mints a fresh token bound to the database that
-> created it. The links below were generated locally on 2026-07-23; on your deployment run
-> `API_TOKEN=… BASE=https://maidscc.app bun run scripts/seed-24.ts` to mint a live set (or
-> copy the same `data/app.db`).
+> **Note on the links:** the links below are **live on `maidscc.app`** (generated
+> 2026-07-23 for client 12345). Each API call mints a fresh token bound to the server's
+> database, so if you rotate the key or redeploy with a fresh database, regenerate them
+> with `API_TOKEN=… BASE=https://maidscc.app bun run scripts/seed-24.ts`.
 
 ### Dubai (8)
 
 | # | Package | Payment | Visa timeline | You pay | 1st collection | Guide |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 8.5 | DD | 7 days | AED 1,218 | 1 Jul | https://maidscc.app/Views/VdwOVPlXerWMbWk6GejchQ |
-| 2 | 8.5 | DD | 14 days | AED 1,218 | 1 Jul | https://maidscc.app/Views/6T1xxfdZSjzPeT-9ZElTpw |
-| 3 | 8.5 | CC | 7 days | AED 1,218 | 26 Jun | https://maidscc.app/Views/0QLl5pICdMJajyyiBhxuFw |
-| 4 | 8.5 | CC | 14 days | AED 1,218 | 26 Jun | https://maidscc.app/Views/tOn-IpLWbfRpHa2Smn_fdg |
-| 5 | 10.96 | DD | 7 days | AED 1,050 | 1 Jul | https://maidscc.app/Views/nQcxJncgJqkRzv05T7p3rQ |
-| 6 | 10.96 | DD | 14 days | AED 1,050 | 1 Jul | https://maidscc.app/Views/_DXe3B3y3mzpNWipsde43g |
-| 7 | 10.96 | CC | 7 days | AED 1,050 | 26 Jun | https://maidscc.app/Views/f5haqnYwmn4gXkE2Rie0RQ |
-| 8 | 10.96 | CC | 14 days | AED 1,050 | 26 Jun | https://maidscc.app/Views/_3ILKHpFA_I1cFxfQpMqgA |
+| 1 | 8.5 | DD | 7 days | AED 1,218 | 1 Jul | https://maidscc.app/Views/xPEiU5ouKFape7KcpITgMg |
+| 2 | 8.5 | DD | 14 days | AED 1,218 | 1 Jul | https://maidscc.app/Views/nw78T-I1FVWFjaK_re01ig |
+| 3 | 8.5 | CC | 7 days | AED 1,218 | 26 Jun | https://maidscc.app/Views/FYVokasnJTfCiJyMLSrdpA |
+| 4 | 8.5 | CC | 14 days | AED 1,218 | 26 Jun | https://maidscc.app/Views/K2I9LNGAERbpUmd9sRlG3Q |
+| 5 | 10.96 | DD | 7 days | AED 1,050 | 1 Jul | https://maidscc.app/Views/DDstWYUWoIjeptLEoRKoNg |
+| 6 | 10.96 | DD | 14 days | AED 1,050 | 1 Jul | https://maidscc.app/Views/LdoliG5T0H1Axe9LSeENFQ |
+| 7 | 10.96 | CC | 7 days | AED 1,050 | 26 Jun | https://maidscc.app/Views/aShyr6pSE5bffsO9nGVZ2w |
+| 8 | 10.96 | CC | 14 days | AED 1,050 | 26 Jun | https://maidscc.app/Views/QBKBKp23sypT4aTCCry9bg |
 
 ### Abu Dhabi (16)
 
@@ -132,22 +132,22 @@ CLIENT_ID = 12345 · salary = AED 1,000 · contract_start_date = 2026-06-01 (Jun
 
 | # | Package | Payment | Visa timeline | EID | You pay | 1st collection | Guide |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 9 | 8.5 | DD | 7 days | NEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/N-ra39VtW88OUP8-HXBDCQ |
-| 10 | 8.5 | DD | 7 days | RENEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/wVidEE_3eypVo2-EPRlKng |
-| 11 | 8.5 | DD | 14 days | NEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/KKNOE76-SxCqKLXoyZuRsg |
-| 12 | 8.5 | DD | 14 days | RENEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/OSq37oA29L8FyWIg4DmKiw |
-| 13 | 8.5 | CC | 7 days | NEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/qQ4FhCOXYhmZ5VRVeXkKDA |
-| 14 | 8.5 | CC | 7 days | RENEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/ipUkQfj9Z2saQwBo19icJQ |
-| 15 | 8.5 | CC | 14 days | NEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/z0hI12-ha8qLGfgxJnc5fw |
-| 16 | 8.5 | CC | 14 days | RENEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/ELU5X2OpehIQsfUYujVn6Q |
-| 17 | 10.96 | DD | 7 days | NEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/fmYgOqLgDNFiPHEOTEenzw |
-| 18 | 10.96 | DD | 7 days | RENEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/jH11ksej0V02dRZLZVlp9g |
-| 19 | 10.96 | DD | 14 days | NEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/B8TzXAVPOkvil09CHJs5Eg |
-| 20 | 10.96 | DD | 14 days | RENEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/HQYtwmTTGQPJYfWfQYd5fw |
-| 21 | 10.96 | CC | 7 days | NEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/Oufux2q7IVSJLyFlHoPjQw |
-| 22 | 10.96 | CC | 7 days | RENEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/8Ggr7dYCIAan6z57bCEWVQ |
-| 23 | 10.96 | CC | 14 days | NEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/mDfqSeSP9We8QbM1Fpg4sA |
-| 24 | 10.96 | CC | 14 days | RENEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/sG8B5YUYOq-BhD8IDe8Cew |
+| 9 | 8.5 | DD | 7 days | NEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/iDzn2QD2N6Q60fDsMsIYYA |
+| 10 | 8.5 | DD | 7 days | RENEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/Ov9KeK46MgCMOGB_mjwKQA |
+| 11 | 8.5 | DD | 14 days | NEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/ep5tsne1GPsadW6swaKloQ |
+| 12 | 8.5 | DD | 14 days | RENEW | AED 1,218 | 1 Jul | https://maidscc.app/Views/Md8fE9Y-500ZOmszm_ei9w |
+| 13 | 8.5 | CC | 7 days | NEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/qHrlZ7BITSezMC9vZSxTlw |
+| 14 | 8.5 | CC | 7 days | RENEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/Mg07aVTUE-0Ce-f4QrUc7g |
+| 15 | 8.5 | CC | 14 days | NEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/SVrADTa8EczCtZiGpCwy7w |
+| 16 | 8.5 | CC | 14 days | RENEW | AED 1,218 | 26 Jun | https://maidscc.app/Views/r-fQVIOCrECVQ6azeoEFjA |
+| 17 | 10.96 | DD | 7 days | NEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/FWAkgV4wuc1fTgsuu7IgzA |
+| 18 | 10.96 | DD | 7 days | RENEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/VW5x3q0ZRUBk1ciuc7dung |
+| 19 | 10.96 | DD | 14 days | NEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/PgH-8os2DF2GbKCrYYBiLg |
+| 20 | 10.96 | DD | 14 days | RENEW | AED 1,050 | 1 Jul | https://maidscc.app/Views/At0dLYvgWN9d90XE6g55nw |
+| 21 | 10.96 | CC | 7 days | NEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/6kTHA7GKoZwoXmvxk0vmJg |
+| 22 | 10.96 | CC | 7 days | RENEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/NTYdHGM4NSkICC2N_ay9KQ |
+| 23 | 10.96 | CC | 14 days | NEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/vnngvcoCat1F9YH_XhToDg |
+| 24 | 10.96 | CC | 14 days | RENEW | AED 1,050 | 26 Jun | https://maidscc.app/Views/ezEgNLuFfc_dqiK0WWn_4g |
 
 Regenerate all 24 for any client/date/salary on any server:
 
