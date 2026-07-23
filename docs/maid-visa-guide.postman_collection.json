@@ -1,0 +1,63 @@
+{
+  "info": {
+    "name": "Maid Visa Guide API",
+    "description": "Endpoints for the maids.cc Maid Visa Guide generator. Set the collection variables `baseUrl` and `apiToken`; the bearer token is applied automatically to every request.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{apiToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5173", "type": "string" },
+    { "key": "apiToken", "value": "", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Create guide (POST /api/guides)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/guides",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "guides"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"CLIENT_ID\": 1002,\n  \"contract_start_date\": \"2026-07-15\",\n  \"salary\": 1500,\n  \"EMIRATE\": \"abu_dhabi\",\n  \"PACKAGE\": \"10.96\",\n  \"PAYMENT_METHOD\": \"CC\",\n  \"Visa_timeline\": 14,\n  \"EID_APPLICATION_TYPE\": \"NEW\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "description": "Creates a guide and returns { ok, token, url }. Bearer required. Failures return { ok:false, step, message }."
+      }
+    },
+    {
+      "name": "Get guide render data (GET /api/guides)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/guides?token={{token}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "guides"],
+          "query": [{ "key": "token", "value": "{{token}}" }]
+        },
+        "description": "Returns { ok, data } for a stored guide (no client_id). Set the `token` collection variable to a token returned by Create guide."
+      }
+    },
+    {
+      "name": "Admin analytics feed (GET /api/admin)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "admin"]
+        },
+        "description": "Returns { ok, guides, visits } for the dashboard. Bearer required."
+      }
+    }
+  ]
+}
