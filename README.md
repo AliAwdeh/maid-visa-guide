@@ -156,3 +156,22 @@ API_TOKEN=your-token BASE=https://maidscc.app \
   CLIENT_ID=12345 SALARY=1000 CONTRACT_START=2026-06-01 \
   bun run scripts/seed-24.ts
 ```
+
+## It adapts — varied salaries & contract dates
+
+The 24 above hold salary and start date fixed to isolate the filters. The guide is fully
+dynamic, though: **VAT (5%) and the total are computed from the salary**, and the whole
+payment window shifts with the **contract start month** — including year rollover and the
+credit-card date adapting to month length (28/29/30/31 days). These live examples (all
+client 12345, generated on `maidscc.app`, verified) show it:
+
+| Salary | Contract start | Variant | You pay | Collection dates | Notes | Guide |
+| --- | --- | --- | --- | --- | --- | --- |
+| AED 1,500 | Jul 2026 | Dubai · 8.5 · DD · 7 | AED 1,743 | 1 Aug · 1 Sep · 1 Oct | window shifts to Aug–Oct; "pay for July directly" | https://maidscc.app/Views/5vZ-NUrDnUlbB26xqsjH9A |
+| AED 1,750 | Dec 2026 | Abu Dhabi · 8.5 · CC · 14 · NEW | AED 2,006 | 27 Dec · 27 Jan · 24 Feb | **year rollover** into 2027; Feb=28 → 24th; VAT 88; 6 steps w/ Biometric | https://maidscc.app/Views/4rYtMZ61l7k5PZc13BjwtQ |
+| AED 3,333 | Jan 2028 | Dubai · 10.96 · DD · 7 | AED 3,500 | 1 Feb · 1 Mar · 1 Apr | VAT 167; no fee (10.96) | https://maidscc.app/Views/E-iEUKl0oMUEZIZz6PhHYg |
+| AED 2,500 | Feb 2026 | Abu Dhabi · 10.96 · CC · 7 · RENEW | AED 2,625 | 24 Feb · 27 Mar · 26 Apr | RENEW → no Biometric (5 steps); VAT 125 | https://maidscc.app/Views/FiVaDKgxoiK1-keuozlhDw |
+| AED 999 | Sep 2026 | Dubai · 8.5 · CC · 14 | AED 1,217 | 26 Sep · 27 Oct · 26 Nov | VAT rounds 49.95 → 50; total 1,217 | https://maidscc.app/Views/6dRN_kgN9JyP9qHZ-K6-7w |
+
+Leap year is handled too: a Jan-2028 start with credit card collects the March payment on
+**25 Feb** (Feb 2028 has 29 days), versus **24 Feb** for a non-leap year.
