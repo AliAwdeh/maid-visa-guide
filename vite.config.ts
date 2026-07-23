@@ -19,32 +19,41 @@ const QUANTA_ICONS_SHIM = fileURLToPath(
   new URL("./src/lib/quanta-material-icons.ts", import.meta.url),
 );
 
+// This app self-hosts under Bun, not Cloudflare Workers, so the workerd
+// built-in `cloudflare:workers` module doesn't exist at runtime. Redirect it to
+// a shim (empty env) so any import resolves; persistence uses bun:sqlite.
+const CLOUDFLARE_SHIM = fileURLToPath(
+  new URL("./src/lib/cloudflare-workers-shim.ts", import.meta.url),
+);
+
 export default defineConfig(({ mode, command }) => {
   const designInspectorEnabled = process.env.HF_DESIGN_INSPECTOR === "1" || mode === "design";
 
   return {
     resolve: {
-      alias: [{ find: /^@higgsfield-ai\/icons(\/.*)?$/, replacement: QUANTA_ICONS_SHIM }],
+      alias: [
+        { find: /^@higgsfield-ai\/icons(\/.*)?$/, replacement: QUANTA_ICONS_SHIM },
+        // Off-Workers: resolve the workerd `cloudflare:workers` builtin to a shim.
+        { find: /^cloudflare:workers$/, replacement: CLOUDFLARE_SHIM },
+      ],
     },
-    // The server bundle runs as a Cloudflare Worker — there is no node_modules
-    // at runtime. Vite's default SSR build leaves npm deps as bare external
-    // imports (h3, react, @tanstack/*, seroval, …), which resolve on a Node
-    // server but throw "No such module" in a Worker. Bundle them all in.
-    // (node: builtins stay external — nodejs_compat provides them.)
+    // The SSR bundle is served by a Bun process (server/serve.ts). Bundle npm
+    // deps in for the production build so the output is self-contained; keep
+    // Bun runtime builtins (bun:sqlite) external — Bun provides them, they must
+    // NOT be bundled.
     ssr: {
-      // Bundle-everything only applies to the production Worker build; the dev
-      // server runs on Node, where CJS deps (react) must stay external or the
-      // ESM module runner chokes on them ("module is not defined").
+      // Bundle-everything only applies to the production build; the dev server
+      // leaves CJS deps (react) external or the ESM module runner chokes on
+      // them ("module is not defined").
       noExternal: command === "build" ? true : undefined,
-      // `cloudflare:workers` is a workerd runtime built-in that exposes the Worker
-      // env / bindings (D1 `DB`, R2 `STORAGE`). Like node: builtins it must NOT be
-      // bundled; the runtime provides it. (`ssr.external` is typed string[].)
-      external: ["cloudflare:workers"],
+      // `bun:sqlite` is a Bun runtime builtin (used by src/lib/db.server.ts).
+      // Like node: builtins it must stay external; the Bun runtime provides it.
+      external: ["bun:sqlite"],
     },
     build: {
-      // Keep `cloudflare:*` external in the SSR rollup pass too — `noExternal`
-      // above would otherwise try to resolve+bundle it and fail.
-      rollupOptions: { external: [/^cloudflare:/] },
+      // Keep `bun:*` builtins external in the SSR rollup pass too — `noExternal`
+      // above would otherwise try to resolve+bundle them and fail.
+      rollupOptions: { external: [/^bun:/] },
     },
     plugins: [
       // Material Symbols SVGs (the app icon set) import as React components via

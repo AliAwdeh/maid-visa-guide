@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 
+import { aed, paymentSchedule, receiptFor, type Pkg, type VariantConfig } from "../lib/guide-config";
+
 /* ═══════════════════════════════════════════════════════════════════════════
    MAID VISA GUIDE — shared, variant-driven component
    ─────────────────────────────────────────────────────────────────────────
-   Every version of the guide is fully described by a VariantConfig:
+   Every version of the guide is fully described by a VariantConfig (defined in
+   src/lib/guide-config.ts, alongside the pure receipt/schedule maths this file
+   renders):
 
      emirate   "dubai" | "abu-dhabi"
      pkg       "8.5k"  | "10.96k"        (10.96k → no monthly fee, no fee VAT)
@@ -17,6 +21,8 @@ import { useEffect, useState } from "react";
                                           Biometric Test ~2 days between
                                           Medical Test and Residency Visa;
                                           "renew" = same timeline as Dubai)
+     salary               the maid's actual monthly salary in AED
+     contractStartDate    yyyy-mm-dd — drives the payment-window month labels
 
    Her Rights is identical in every variant.
 
@@ -24,101 +30,6 @@ import { useEffect, useState } from "react";
    blue #4878BC · orange #F6891E · green #15B886 / #0A7C5A
    dark #111827 · gray #6B7280 / #374151 · wash #EEF3FB · #B9CCE6 / #E5E7EB
    ═══════════════════════════════════════════════════════════════════════════ */
-
-export type Emirate = "dubai" | "abu-dhabi";
-export type Pkg = "8.5k" | "10.96k";
-export type Payment = "direct-debit" | "credit-card";
-export type Speed = 7 | 14;
-export type EidType = "new" | "renew";
-
-export type VariantConfig = {
-  emirate: Emirate;
-  pkg: Pkg;
-  payment: Payment;
-  speed: Speed;
-  /** Only meaningful for Abu Dhabi. Ignored for Dubai. */
-  eidType: EidType;
-};
-
-export const DEFAULT_CONFIG: VariantConfig = {
-  emirate: "dubai",
-  pkg: "8.5k",
-  payment: "direct-debit",
-  speed: 7,
-  eidType: "new",
-};
-
-/** Human-readable key, e.g. "Dubai · 8.5k · Direct Debit · 7 days" */
-export function variantLabel(c: VariantConfig): string {
-  const parts = [
-    c.emirate === "dubai" ? "Dubai" : "Abu Dhabi",
-    c.pkg,
-    c.payment === "direct-debit" ? "Direct Debit" : "Credit Card",
-    `${c.speed} days`,
-  ];
-  if (c.emirate === "abu-dhabi") parts.push(c.eidType === "new" ? "EID New" : "EID Renew");
-  return parts.join(" · ");
-}
-
-/* ------------------------- payment-date computation ------------------------ */
-/* The demo cohort (same as the Expectation Message deck) pays for July,
-   August and September. Salary months are July & August, paid by the 3rd of
-   the following month. */
-
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-function daysInMonth(monthIndex: number, year = 2026): number {
-  return new Date(year, monthIndex + 1, 0).getDate();
-}
-
-function ordinal(n: number): string {
-  const s = ["th", "st", "nd", "rd"];
-  const v = n % 100;
-  return `${n}${s[(v - 20) % 10] || s[v] || s[0]}`;
-}
-
-/**
- * Collection date for the payment that covers `coveredMonthIndex`.
- * direct-debit → the 1st of the covered month.
- * credit-card  → PED: (last day of the PREVIOUS month − 4), dynamic per
- *                month (30-day June → 26th, 31-day July/August → 27th).
- */
-export function collectionDate(payment: Payment, coveredMonthIndex: number): string {
-  if (payment === "direct-debit") return `1st of ${MONTHS[coveredMonthIndex]}`;
-  const prev = (coveredMonthIndex + 11) % 12;
-  const day = daysInMonth(prev) - 4;
-  return `${ordinal(day)} of ${MONTHS[prev]}`;
-}
-
-/* ------------------------------ receipt maths ------------------------------ */
-
-export function receiptFor(pkg: Pkg) {
-  const rows: { label: string; value: string; orange?: boolean; vat?: boolean }[] = [
-    { label: "Maid's salary", value: "AED 1,000" },
-    { label: "VAT (5%)", value: "AED 50", vat: true },
-  ];
-  if (pkg === "8.5k") {
-    rows.push(
-      { label: "Monthly payment fee", value: "AED 160", orange: true },
-      { label: "VAT (5%)", value: "AED 8", vat: true },
-    );
-  }
-  const total = pkg === "8.5k" ? "AED 1,218" : "AED 1,050";
-  return { rows, total };
-}
 
 /* ---------------------------------- icons --------------------------------- */
 
@@ -403,9 +314,9 @@ function TimelineStep({
   );
 }
 
-/* the mini receipt — rows depend on the package; ↳ ties VAT to its line */
-function PaymentBreakdown({ pkg }: { pkg: Pkg }) {
-  const { rows, total } = receiptFor(pkg);
+/* the mini receipt — rows depend on salary + package; ↳ ties VAT to its line */
+function PaymentBreakdown({ salary, pkg }: { salary: number; pkg: Pkg }) {
+  const { rows, total } = receiptFor(salary, pkg);
   return (
     <div className="mt-3 overflow-hidden rounded-xl border border-[#B9CCE6] bg-[#EEF3FB]">
       <div className="divide-y divide-[#B9CCE6]/50 px-3 text-[13px] sm:px-4 sm:text-sm">
@@ -446,16 +357,18 @@ function PaymentBreakdown({ pkg }: { pkg: Pkg }) {
 
 /* a "you pay us" card: date is the step title; amount reads on one clean row */
 function PayCard({
+  salary,
   pkg,
   note,
   defaultOpen = false,
 }: {
+  salary: number;
   pkg: Pkg;
   note?: string;
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  const { total } = receiptFor(pkg);
+  const { total } = receiptFor(salary, pkg);
   return (
     <div className="rounded-2xl border border-[#E5E7EB] bg-white p-3 shadow-sm sm:p-4">
       <button
@@ -485,7 +398,7 @@ function PayCard({
         }`}
       >
         <div className="overflow-hidden">
-          <PaymentBreakdown pkg={pkg} />
+          <PaymentBreakdown salary={salary} pkg={pkg} />
         </div>
       </div>
       {note ? <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">{note}</p> : null}
@@ -540,6 +453,7 @@ function SectionCard({
 function PaymentEntry({
   date,
   covers,
+  salary,
   pkg,
   note,
   defaultOpen = false,
@@ -547,6 +461,7 @@ function PaymentEntry({
 }: {
   date: string;
   covers: string;
+  salary: number;
   pkg: Pkg;
   note?: string;
   defaultOpen?: boolean;
@@ -561,7 +476,7 @@ function PaymentEntry({
         </p>
       ) : null}
       <div className="mt-2">
-        <PayCard pkg={pkg} note={note} defaultOpen={defaultOpen} />
+        <PayCard salary={salary} pkg={pkg} note={note} defaultOpen={defaultOpen} />
       </div>
     </TimelineStep>
   );
@@ -573,9 +488,10 @@ export function MaidVisaGuide({ config }: { config: VariantConfig }) {
   const [active, setActive] = useState("timeline");
 
   const visaSteps = buildVisaSteps(config);
-  const JULY = 6;
-  const AUGUST = 7;
-  const SEPTEMBER = 8;
+  const { salary } = config;
+  /* the whole payment window (month labels + collection dates) is derived from
+     the contract start month and the payment method */
+  const schedule = paymentSchedule(config.contractStartDate, config.payment);
   /* credit-card collections happen in the previous month, so show which
      month each payment covers to keep the timeline unambiguous */
   const showCovers = config.payment === "credit-card";
@@ -710,54 +626,57 @@ export function MaidVisaGuide({ config }: { config: VariantConfig }) {
         <SectionCard id="payments" title="Payments & Salary">
           <div className="mt-7">
             <Timeline>
-              {/* July's payment */}
+              {/* first covered month's payment */}
               <PaymentEntry
-                date={collectionDate(config.payment, JULY)}
-                covers="July"
+                date={schedule.entries[0].collect}
+                covers={schedule.entries[0].coversName}
+                salary={salary}
                 pkg={config.pkg}
                 defaultOpen
                 showCovers={showCovers}
-                note="If you'd like to pay your maid for June, please do so directly to her."
+                note={`If you'd like to pay your maid for ${schedule.startMonthName}, please do so directly to her.`}
               />
 
-              {/* August's payment */}
+              {/* second covered month's payment */}
               <PaymentEntry
-                date={collectionDate(config.payment, AUGUST)}
-                covers="August"
+                date={schedule.entries[1].collect}
+                covers={schedule.entries[1].coversName}
+                salary={salary}
                 pkg={config.pkg}
                 showCovers={showCovers}
               />
 
-              {/* by the 3rd of August — salary + ATM card note */}
+              {/* by the 3rd of the second covered month — salary + ATM card note */}
               <TimelineStep badge={<StepBadge color="green" icon={IcCheck} />}>
                 <h3 className="pt-1 text-[18px] font-bold text-[#111827]">
-                  By the 3rd of August
+                  By the 3rd of {schedule.payHerMonths[0]}
                 </h3>
                 <p className="mt-0.5 text-[17px] font-bold text-[#111827]">
-                  We pay her <span className="text-[#15B886]">AED 1,000</span>
+                  We pay her <span className="text-[#15B886]">{aed(salary)}</span>
                 </p>
                 <p className="mt-2 flex items-start gap-1.5 rounded-xl bg-[#EEF3FB] px-3 py-2.5 text-sm leading-relaxed font-semibold text-[#4878BC]">
                   <IcIdCard className="mt-0.5 h-4 w-4 shrink-0" />
-                  Before the 3rd of August, we'll send you the details to pick up her ATM
-                  card.
+                  Before the 3rd of {schedule.payHerMonths[0]}, we'll send you the details to
+                  pick up her ATM card.
                 </p>
               </TimelineStep>
 
-              {/* September's payment */}
+              {/* third covered month's payment */}
               <PaymentEntry
-                date={collectionDate(config.payment, SEPTEMBER)}
-                covers="September"
+                date={schedule.entries[2].collect}
+                covers={schedule.entries[2].coversName}
+                salary={salary}
                 pkg={config.pkg}
                 showCovers={showCovers}
               />
 
-              {/* by the 3rd of September */}
+              {/* by the 3rd of the third covered month */}
               <TimelineStep badge={<StepBadge color="green" icon={IcCheck} />}>
                 <h3 className="pt-1 text-[18px] font-bold text-[#111827]">
-                  By the 3rd of September
+                  By the 3rd of {schedule.payHerMonths[1]}
                 </h3>
                 <p className="mt-0.5 text-[17px] font-bold text-[#111827]">
-                  We pay her <span className="text-[#15B886]">AED 1,000</span>
+                  We pay her <span className="text-[#15B886]">{aed(salary)}</span>
                 </p>
               </TimelineStep>
             </Timeline>

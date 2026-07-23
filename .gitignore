@@ -13,6 +13,9 @@ dist/
 .env.*
 !.env.example
 
+# local sqlite database (persisted guides + visit logs)
+data/
+
 # logs & OS noise
 *.log
 .DS_Store

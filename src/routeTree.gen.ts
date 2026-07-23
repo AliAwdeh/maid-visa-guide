@@ -11,7 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as DebugRouteImport } from './routes/debug'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiVisitsRouteImport } from './routes/api/visits'
+import { Route as ApiGuidesRouteImport } from './routes/api/guides'
+import { Route as ApiAdminRouteImport } from './routes/api/admin'
+import { Route as AdminAdminRouteImport } from './routes/admin/admin'
+import { Route as ViewsIdRouteImport } from './routes/Views/$id'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -23,40 +29,122 @@ const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DebugRoute = DebugRouteImport.update({
+  id: '/debug',
+  path: '/debug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVisitsRoute = ApiVisitsRouteImport.update({
+  id: '/api/visits',
+  path: '/api/visits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGuidesRoute = ApiGuidesRouteImport.update({
+  id: '/api/guides',
+  path: '/api/guides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminRoute = ApiAdminRouteImport.update({
+  id: '/api/admin',
+  path: '/api/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAdminRoute = AdminAdminRouteImport.update({
+  id: '/admin/admin',
+  path: '/admin/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ViewsIdRoute = ViewsIdRouteImport.update({
+  id: '/Views/$id',
+  path: '/Views/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/debug': typeof DebugRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/Views/$id': typeof ViewsIdRoute
+  '/admin/admin': typeof AdminAdminRoute
+  '/api/admin': typeof ApiAdminRoute
+  '/api/guides': typeof ApiGuidesRoute
+  '/api/visits': typeof ApiVisitsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/debug': typeof DebugRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/Views/$id': typeof ViewsIdRoute
+  '/admin/admin': typeof AdminAdminRoute
+  '/api/admin': typeof ApiAdminRoute
+  '/api/guides': typeof ApiGuidesRoute
+  '/api/visits': typeof ApiVisitsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/debug': typeof DebugRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/Views/$id': typeof ViewsIdRoute
+  '/admin/admin': typeof AdminAdminRoute
+  '/api/admin': typeof ApiAdminRoute
+  '/api/guides': typeof ApiGuidesRoute
+  '/api/visits': typeof ApiVisitsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/robots.txt' | '/sitemap.xml'
+  fullPaths:
+    | '/'
+    | '/debug'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/Views/$id'
+    | '/admin/admin'
+    | '/api/admin'
+    | '/api/guides'
+    | '/api/visits'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/robots.txt' | '/sitemap.xml'
-  id: '__root__' | '/' | '/robots.txt' | '/sitemap.xml'
+  to:
+    | '/'
+    | '/debug'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/Views/$id'
+    | '/admin/admin'
+    | '/api/admin'
+    | '/api/guides'
+    | '/api/visits'
+  id:
+    | '__root__'
+    | '/'
+    | '/debug'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/Views/$id'
+    | '/admin/admin'
+    | '/api/admin'
+    | '/api/guides'
+    | '/api/visits'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DebugRoute: typeof DebugRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ViewsIdRoute: typeof ViewsIdRoute
+  AdminAdminRoute: typeof AdminAdminRoute
+  ApiAdminRoute: typeof ApiAdminRoute
+  ApiGuidesRoute: typeof ApiGuidesRoute
+  ApiVisitsRoute: typeof ApiVisitsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,6 +163,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/debug': {
+      id: '/debug'
+      path: '/debug'
+      fullPath: '/debug'
+      preLoaderRoute: typeof DebugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,13 +177,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/visits': {
+      id: '/api/visits'
+      path: '/api/visits'
+      fullPath: '/api/visits'
+      preLoaderRoute: typeof ApiVisitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/guides': {
+      id: '/api/guides'
+      path: '/api/guides'
+      fullPath: '/api/guides'
+      preLoaderRoute: typeof ApiGuidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin': {
+      id: '/api/admin'
+      path: '/api/admin'
+      fullPath: '/api/admin'
+      preLoaderRoute: typeof ApiAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/admin': {
+      id: '/admin/admin'
+      path: '/admin/admin'
+      fullPath: '/admin/admin'
+      preLoaderRoute: typeof AdminAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/Views/$id': {
+      id: '/Views/$id'
+      path: '/Views/$id'
+      fullPath: '/Views/$id'
+      preLoaderRoute: typeof ViewsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DebugRoute: DebugRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ViewsIdRoute: ViewsIdRoute,
+  AdminAdminRoute: AdminAdminRoute,
+  ApiAdminRoute: ApiAdminRoute,
+  ApiGuidesRoute: ApiGuidesRoute,
+  ApiVisitsRoute: ApiVisitsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
