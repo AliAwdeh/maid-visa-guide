@@ -175,3 +175,16 @@ client 12345, generated on `maidscc.app`, verified) show it:
 
 Leap year is handled too: a Jan-2028 start with credit card collects the March payment on
 **25 Feb** (Feb 2028 has 29 days), versus **24 Feb** for a non-leap year.
+
+## Tracking where a visit came from
+
+The `/admin/admin` dashboard shows a **Referrer** for every visit. Links opened from
+WhatsApp, SMS, or a typed address don't send a browser referrer, so tag the shared link
+with `?ref=…` and that value is recorded instead:
+
+```
+https://maidscc.app/Views/<token>?ref=whatsapp
+https://maidscc.app/Views/<token>?ref=email
+```
+
+`?utm_source=…` works too. Untagged visits show as “direct”.

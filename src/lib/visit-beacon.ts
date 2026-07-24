@@ -21,11 +21,17 @@ export const startVisitBeacon = createIsomorphicFn()
     const sections = new Set<string>();
     let maxScrollPct = 0;
 
+    // Source of the visit. A `?ref=` (or `?utm_source=`) tag on the link wins,
+    // because links opened from WhatsApp / SMS / a typed URL send no browser
+    // referrer. Falls back to the referring page, then null ("direct").
+    const params = new URLSearchParams(window.location.search);
+    const referrer = params.get("ref") || params.get("utm_source") || document.referrer || null;
+
     const payload = () => ({
       sessionId,
       guideToken,
       path,
-      referrer: document.referrer || null,
+      referrer,
       language: navigator.language || null,
       screen: `${window.screen.width}x${window.screen.height}`,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
